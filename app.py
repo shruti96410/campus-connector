@@ -83,6 +83,55 @@ elif choice == "Login":
         else:
             st.error("Invalid credentials")
 
+# ---------------- ROADMAP GENERATOR ---------------- #
+def generate_roadmap(career, skills):
+    skills = skills.lower().split()
+
+    if career == "Software Developer":
+        roadmap = [
+            "Learn Python Basics",
+            "Understand Data Structures & Algorithms",
+            "Learn HTML, CSS, JavaScript",
+            "Build Projects",
+            "Learn Git & GitHub",
+            "Prepare for Interviews"
+        ]
+
+    elif career == "Data Scientist":
+        roadmap = [
+            "Learn Python",
+            "Study Statistics & Probability",
+            "Learn Pandas & NumPy",
+            "Study Machine Learning",
+            "Work on Real Datasets",
+            "Build ML Projects"
+        ]
+
+    elif career == "UI/UX Designer":
+        roadmap = [
+            "Learn Design Principles",
+            "Use Figma / Adobe XD",
+            "Study User Experience",
+            "Create UI Designs",
+            "Build Portfolio",
+            "Work on Case Studies"
+        ]
+
+    else:
+        roadmap = [
+            "Explore different fields",
+            "Learn basic programming",
+            "Try small projects",
+            "Find your interest",
+            "Choose specialization"
+        ]
+
+    # Extra smart feature
+    if "python" not in skills and career != "UI/UX Designer":
+        roadmap.insert(0, "Start with Python Basics")
+
+    return roadmap
+
 # ---------------- MAIN APP ---------------- #
 if st.session_state.logged_in:
 
@@ -107,46 +156,24 @@ if st.session_state.logged_in:
         st.subheader("🎯 Recommended Career")
         st.success(result)
 
-        # -------- Career Info -------- #
-        career_info = {
-            "Software Developer": {
-                "desc": "Builds applications and systems.",
-                "skills": "Python, Java, DSA, Web Development",
-                "link": "https://roadmap.sh/software-engineer",
-                "roadmap": ["Python Basics", "DSA", "Web Development", "Projects"]
-            },
-            "UI/UX Designer": {
-                "desc": "Designs user-friendly interfaces.",
-                "skills": "Figma, UX Principles, Creativity",
-                "link": "https://roadmap.sh/design",
-                "roadmap": ["Figma", "UI Principles", "UX Research", "Portfolio"]
-            },
-            "Data Scientist": {
-                "desc": "Analyzes data and builds ML models.",
-                "skills": "Python, Statistics, Machine Learning",
-                "link": "https://roadmap.sh/data-scientist",
-                "roadmap": ["Python", "Statistics", "ML", "Projects"]
-            },
-            "Explore Multiple Fields": {
-                "desc": "Explore different domains.",
-                "skills": "Basic Programming",
-                "link": "https://roadmap.sh",
-                "roadmap": ["Explore", "Learn Basics", "Choose Field"]
-            }
-        }
+        # -------- Info -------- #
+        st.write("📘 Career Description:")
+        st.write({
+            "Software Developer": "Builds applications and systems.",
+            "UI/UX Designer": "Designs user-friendly interfaces.",
+            "Data Scientist": "Analyzes data and builds models.",
+            "Explore Multiple Fields": "Explore different domains."
+        }[result])
 
-        info = career_info[result]
+        # -------- ROADMAP -------- #
+        st.subheader("🛤 Personalized Learning Roadmap")
 
-        st.write(f"📘 {info['desc']}")
-        st.write(f"🛠 Skills Needed: {info['skills']}")
-        st.markdown(f"[📍 View Detailed Roadmap]({info['link']})")
+        roadmap = generate_roadmap(result, skills)
 
-        # -------- Roadmap -------- #
-        st.subheader("🛤 Learning Roadmap")
-        for step in info["roadmap"]:
-            st.write(f"➡ {step}")
+        for i, step in enumerate(roadmap, 1):
+            st.write(f"{i}. {step}")
 
-        # -------- Skill Gap -------- #
+        # -------- SKILL GAP -------- #
         required_skills = {
             "Software Developer": ["python", "dsa", "html"],
             "UI/UX Designer": ["figma", "design"],
@@ -163,40 +190,33 @@ if st.session_state.logged_in:
         st.divider()
         st.subheader("📊 Career Insights Dashboard")
 
-        # Skill Distribution
-        if skills:
-            skill_df = pd.DataFrame({
-                "Skills": user_skills,
-                "Count": [1] * len(user_skills)
-            })
+        # Skills chart
+        skill_df = pd.DataFrame({
+            "Skills": user_skills,
+            "Count": [1] * len(user_skills)
+        })
 
-            st.write("### 🛠 Your Skills")
-            fig1, ax1 = plt.subplots()
-            ax1.bar(skill_df["Skills"], skill_df["Count"])
-            ax1.set_xlabel("Skills")
-            ax1.set_ylabel("Presence")
-            st.pyplot(fig1)
+        fig1, ax1 = plt.subplots()
+        ax1.bar(skill_df["Skills"], skill_df["Count"])
+        st.pyplot(fig1)
 
-        # Missing Skills Chart
+        # Missing skills chart
         if missing:
             missing_df = pd.DataFrame({
                 "Missing": missing,
                 "Count": [1] * len(missing)
             })
 
-            st.write("### ⚠ Missing Skills")
             fig2, ax2 = plt.subplots()
             ax2.bar(missing_df["Missing"], missing_df["Count"])
             st.pyplot(fig2)
 
-        # Career Comparison
-        st.write("### 📈 Career Comparison")
+        # Career comparison
         careers = ["Software Dev", "Data Sci", "UI/UX"]
         scores = [3, 2, 2]
 
         fig3, ax3 = plt.subplots()
         ax3.plot(careers, scores, marker='o')
-        ax3.set_ylabel("Suitability")
         st.pyplot(fig3)
 
     # ---------------- CHATBOT ---------------- #
