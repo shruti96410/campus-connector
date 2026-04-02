@@ -1,256 +1,88 @@
 import streamlit as st
-import sqlite3
-import pandas as pd
 import matplotlib.pyplot as plt
 
 # ---------------- PAGE CONFIG ---------------- #
-st.set_page_config(page_title="Smart Career Navigator", page_icon="🚀")
-
-# ---------------- DATABASE ---------------- #
-def init_db():
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE,
-            password TEXT
-        )
-    ''')
-    conn.commit()
-    conn.close()
-
-init_db()
-
-# ---------------- AUTH ---------------- #
-def signup(username, password):
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
-    try:
-        c.execute("INSERT INTO users VALUES (NULL, ?, ?)", (username, password))
-        conn.commit()
-        return True
-    except:
-        return False
-    finally:
-        conn.close()
-
-def login(username, password):
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
-    c.execute("SELECT password FROM users WHERE username=?", (username,))
-    user = c.fetchone()
-    conn.close()
-    return user and password == user[0]
-
-# ---------------- SESSION ---------------- #
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-
-if "username" not in st.session_state:
-    st.session_state.username = ""
+st.set_page_config(page_title="Smart Career Navigator", page_icon="🎓")
 
 # ---------------- HEADER ---------------- #
-st.title("🚀 Smart Career Navigator")
-st.caption("Find your perfect career path with smart recommendations")
+st.title("🎓 Smart Career Navigator")
+st.caption("Connecting students, clubs, and opportunities")
+st.divider()
 
-menu = ["Login", "Signup"]
-choice = st.sidebar.selectbox("Menu", menu)
+# ---------------- SIDEBAR ---------------- #
+menu = ["Home", "Events", "Clubs", "Profile", "Dashboard"]
+choice = st.sidebar.selectbox("Navigation", menu)
 
-# ---------------- SIGNUP ---------------- #
-if choice == "Signup":
-    st.subheader("Create Account")
-    user = st.text_input("Username")
-    pwd = st.text_input("Password", type="password")
+# ---------------- HOME ---------------- #
+if choice == "Home":
+    st.subheader("🏠 Welcome to Campus Connector")
 
-    if st.button("Signup"):
-        if signup(user, pwd):
-            st.success("Account created successfully!")
-        else:
-            st.error("User already exists")
+    st.write("""
+    Smart Career Navigator helps students:
+    - Discover events 📅
+    - Join clubs 🎯
+    - Stay connected 🤝
+    """)
 
-# ---------------- LOGIN ---------------- #
-elif choice == "Login":
-    st.subheader("Login")
-    user = st.text_input("Username")
-    pwd = st.text_input("Password", type="password")
+    if st.button("Explore Events"):
+        st.success("Go to Events section from sidebar!")
 
-    if st.button("Login"):
-        if login(user, pwd):
-            st.session_state.logged_in = True
-            st.session_state.username = user
-            st.success("Login successful!")
-        else:
-            st.error("Invalid credentials")
+# ---------------- EVENTS ---------------- #
+elif choice == "Events":
+    st.subheader("📅 Upcoming Events")
 
-# ---------------- DYNAMIC ROADMAP ---------------- #
-def generate_roadmap(career, skills):
-    skills = skills.lower().split()
-    roadmap = []
+    events = [
+        {"name": "Hackathon 2026", "date": "10 April"},
+        {"name": "AI Workshop", "date": "15 April"},
+        {"name": "Tech Seminar", "date": "20 April"}
+    ]
 
-    if career == "Software Developer":
+    for event in events:
+        st.write(f"🔹 {event['name']} - {event['date']}")
+        if st.button(f"Join {event['name']}"):
+            st.success(f"You joined {event['name']}!")
 
-        if "python" not in skills:
-            roadmap.append("Learn Python Basics")
+# ---------------- CLUBS ---------------- #
+elif choice == "Clubs":
+    st.subheader("🎯 College Clubs")
 
-        if "dsa" not in skills:
-            roadmap.append("Learn Data Structures & Algorithms")
+    clubs = ["Coding Club", "AI Club", "Design Club", "Robotics Club"]
 
-        if "html" not in skills or "css" not in skills:
-            roadmap.append("Learn HTML, CSS, JavaScript")
+    for club in clubs:
+        st.write(f"🔸 {club}")
+        if st.button(f"Join {club}"):
+            st.success(f"You joined {club}!")
 
-        roadmap.append("Build Real-world Projects")
+# ---------------- PROFILE ---------------- #
+elif choice == "Profile":
+    st.subheader("👤 Student Profile")
 
-        if "git" not in skills:
-            roadmap.append("Learn Git & GitHub")
+    name = st.text_input("Enter your name")
+    branch = st.text_input("Branch")
+    interests = st.text_input("Interests")
 
-        roadmap.append("Prepare for Technical Interviews")
+    if st.button("Save Profile"):
+        st.success("Profile saved successfully!")
 
-    elif career == "Data Scientist":
+# ---------------- DASHBOARD ---------------- #
+elif choice == "Dashboard":
+    st.subheader("📊 Campus Insights Dashboard")
 
-        if "python" not in skills:
-            roadmap.append("Learn Python for Data Science")
+    # Sample data
+    categories = ["Students", "Events", "Clubs"]
+    values = [120, 15, 6]
 
-        if "statistics" not in skills:
-            roadmap.append("Study Statistics & Probability")
+    fig, ax = plt.subplots()
+    ax.bar(categories, values)
+    ax.set_title("Campus Overview")
+    st.pyplot(fig)
 
-        if "pandas" not in skills:
-            roadmap.append("Learn Pandas & NumPy")
+    # Pie Chart
+    st.write("### 📌 Participation Overview")
+    fig2, ax2 = plt.subplots()
+    ax2.pie(values, labels=categories, autopct='%1.1f%%')
+    st.pyplot(fig2)
 
-        if "ml" not in skills:
-            roadmap.append("Study Machine Learning")
-
-        roadmap.append("Work on Real-world Datasets")
-        roadmap.append("Build ML Projects")
-
-    elif career == "UI/UX Designer":
-
-        if "figma" not in skills:
-            roadmap.append("Learn Figma / Adobe XD")
-
-        if "design" not in skills:
-            roadmap.append("Understand Design Principles")
-
-        roadmap.append("Learn User Experience (UX)")
-        roadmap.append("Create UI Designs")
-        roadmap.append("Build Portfolio")
-
-    else:
-        roadmap = [
-            "Explore different domains",
-            "Learn basic programming",
-            "Try small projects",
-            "Find your interest"
-        ]
-
-    return roadmap
-
-# ---------------- MAIN APP ---------------- #
-if st.session_state.logged_in:
-
-    st.success(f"Welcome, {st.session_state.username} 👋")
-    st.divider()
-
-    interest = st.text_input("🎯 Enter your interests")
-    skills = st.text_input("🛠 Enter your skills")
-
-    if st.button("🚀 Find My Career"):
-
-        # -------- Career Logic -------- #
-        if "code" in skills.lower():
-            result = "Software Developer"
-        elif "design" in interest.lower():
-            result = "UI/UX Designer"
-        elif "data" in skills.lower():
-            result = "Data Scientist"
-        else:
-            result = "Explore Multiple Fields"
-
-        st.subheader("🎯 Recommended Career")
-        st.success(result)
-
-        # -------- Description -------- #
-        st.write({
-            "Software Developer": "Builds applications and systems.",
-            "UI/UX Designer": "Designs user-friendly interfaces.",
-            "Data Scientist": "Analyzes data and builds models.",
-            "Explore Multiple Fields": "Explore different domains."
-        }[result])
-
-        # -------- ROADMAP -------- #
-        st.subheader("🛤 Personalized Learning Roadmap")
-
-        roadmap = generate_roadmap(result, skills)
-
-        for i, step in enumerate(roadmap, 1):
-            st.write(f"{i}. {step}")
-
-        # -------- SKILL GAP -------- #
-        required_skills = {
-            "Software Developer": ["python", "dsa", "html"],
-            "UI/UX Designer": ["figma", "design"],
-            "Data Scientist": ["python", "ml"]
-        }
-
-        user_skills = skills.lower().split()
-        missing = [s for s in required_skills.get(result, []) if s not in user_skills]
-
-        if missing:
-            st.warning(f"⚠ Missing Skills: {', '.join(missing)}")
-
-        # -------- DASHBOARD -------- #
-        st.divider()
-        st.subheader("📊 Career Insights Dashboard")
-
-        # Skills Chart
-        skill_df = pd.DataFrame({
-            "Skills": user_skills,
-            "Count": [1] * len(user_skills)
-        })
-
-        fig1, ax1 = plt.subplots()
-        ax1.bar(skill_df["Skills"], skill_df["Count"])
-        st.pyplot(fig1)
-
-        # Missing Skills Chart
-        if missing:
-            missing_df = pd.DataFrame({
-                "Missing": missing,
-                "Count": [1] * len(missing)
-            })
-
-            fig2, ax2 = plt.subplots()
-            ax2.bar(missing_df["Missing"], missing_df["Count"])
-            st.pyplot(fig2)
-
-        # Career Comparison
-        careers = ["Software Dev", "Data Sci", "UI/UX"]
-        scores = [3, 2, 2]
-
-        fig3, ax3 = plt.subplots()
-        ax3.plot(careers, scores, marker='o')
-        st.pyplot(fig3)
-
-    # ---------------- CHATBOT ---------------- #
-    st.divider()
-    st.subheader("💬 Career Assistant Chatbot")
-
-    msg = st.text_input("Ask something...")
-
-    if st.button("Send"):
-        if "career" in msg.lower():
-            st.info("Explore Software Dev, Data Science, UI/UX.")
-        elif "data" in msg.lower():
-            st.info("Learn Python, Statistics, ML.")
-        elif "developer" in msg.lower():
-            st.info("Learn Python, DSA, Web Dev.")
-        elif "design" in msg.lower():
-            st.info("Learn Figma, UX.")
-        else:
-            st.info("Ask about careers, skills, roadmap!")
-
-    # ---------------- LOGOUT ---------------- #
-    if st.button("Logout"):
-        st.session_state.logged_in = False
-        st.session_state.username = ""
-        st.rerun()
+# ---------------- FOOTER ---------------- #
+st.markdown("---")
+st.markdown("Made by Shruti Verma 🚀")
