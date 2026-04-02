@@ -83,52 +83,65 @@ elif choice == "Login":
         else:
             st.error("Invalid credentials")
 
-# ---------------- ROADMAP GENERATOR ---------------- #
+# ---------------- DYNAMIC ROADMAP ---------------- #
 def generate_roadmap(career, skills):
     skills = skills.lower().split()
+    roadmap = []
 
     if career == "Software Developer":
-        roadmap = [
-            "Learn Python Basics",
-            "Understand Data Structures & Algorithms",
-            "Learn HTML, CSS, JavaScript",
-            "Build Projects",
-            "Learn Git & GitHub",
-            "Prepare for Interviews"
-        ]
+
+        if "python" not in skills:
+            roadmap.append("Learn Python Basics")
+
+        if "dsa" not in skills:
+            roadmap.append("Learn Data Structures & Algorithms")
+
+        if "html" not in skills or "css" not in skills:
+            roadmap.append("Learn HTML, CSS, JavaScript")
+
+        roadmap.append("Build Real-world Projects")
+
+        if "git" not in skills:
+            roadmap.append("Learn Git & GitHub")
+
+        roadmap.append("Prepare for Technical Interviews")
 
     elif career == "Data Scientist":
-        roadmap = [
-            "Learn Python",
-            "Study Statistics & Probability",
-            "Learn Pandas & NumPy",
-            "Study Machine Learning",
-            "Work on Real Datasets",
-            "Build ML Projects"
-        ]
+
+        if "python" not in skills:
+            roadmap.append("Learn Python for Data Science")
+
+        if "statistics" not in skills:
+            roadmap.append("Study Statistics & Probability")
+
+        if "pandas" not in skills:
+            roadmap.append("Learn Pandas & NumPy")
+
+        if "ml" not in skills:
+            roadmap.append("Study Machine Learning")
+
+        roadmap.append("Work on Real-world Datasets")
+        roadmap.append("Build ML Projects")
 
     elif career == "UI/UX Designer":
-        roadmap = [
-            "Learn Design Principles",
-            "Use Figma / Adobe XD",
-            "Study User Experience",
-            "Create UI Designs",
-            "Build Portfolio",
-            "Work on Case Studies"
-        ]
+
+        if "figma" not in skills:
+            roadmap.append("Learn Figma / Adobe XD")
+
+        if "design" not in skills:
+            roadmap.append("Understand Design Principles")
+
+        roadmap.append("Learn User Experience (UX)")
+        roadmap.append("Create UI Designs")
+        roadmap.append("Build Portfolio")
 
     else:
         roadmap = [
-            "Explore different fields",
+            "Explore different domains",
             "Learn basic programming",
             "Try small projects",
-            "Find your interest",
-            "Choose specialization"
+            "Find your interest"
         ]
-
-    # Extra smart feature
-    if "python" not in skills and career != "UI/UX Designer":
-        roadmap.insert(0, "Start with Python Basics")
 
     return roadmap
 
@@ -156,8 +169,7 @@ if st.session_state.logged_in:
         st.subheader("🎯 Recommended Career")
         st.success(result)
 
-        # -------- Info -------- #
-        st.write("📘 Career Description:")
+        # -------- Description -------- #
         st.write({
             "Software Developer": "Builds applications and systems.",
             "UI/UX Designer": "Designs user-friendly interfaces.",
@@ -190,7 +202,7 @@ if st.session_state.logged_in:
         st.divider()
         st.subheader("📊 Career Insights Dashboard")
 
-        # Skills chart
+        # Skills Chart
         skill_df = pd.DataFrame({
             "Skills": user_skills,
             "Count": [1] * len(user_skills)
@@ -200,7 +212,7 @@ if st.session_state.logged_in:
         ax1.bar(skill_df["Skills"], skill_df["Count"])
         st.pyplot(fig1)
 
-        # Missing skills chart
+        # Missing Skills Chart
         if missing:
             missing_df = pd.DataFrame({
                 "Missing": missing,
@@ -211,7 +223,7 @@ if st.session_state.logged_in:
             ax2.bar(missing_df["Missing"], missing_df["Count"])
             st.pyplot(fig2)
 
-        # Career comparison
+        # Career Comparison
         careers = ["Software Dev", "Data Sci", "UI/UX"]
         scores = [3, 2, 2]
 
