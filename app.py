@@ -2,127 +2,163 @@ import streamlit as st
 import matplotlib.pyplot as plt
 
 # ---------------- PAGE CONFIG ---------------- #
-st.set_page_config(page_title="Campus Connector", page_icon="🎓")
+st.set_page_config(
+    page_title="Smart Career Navigator",
+    page_icon="🚀",
+    layout="wide"
+)
 
-# ---------------- DARK CUSTOM CSS ---------------- #
+# ---------------- DARK THEME CSS ---------------- #
 st.markdown("""
 <style>
-body {
-    background-color: #0E1117;
-    color: white;
-}
-
+/* Main background */
 .stApp {
     background-color: #0E1117;
 }
 
-h1, h2, h3, h4 {
-    color: #FFFFFF;
+/* Text */
+h1, h2, h3, h4, h5, h6, p, label {
+    color: #FFFFFF !important;
 }
 
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: #1C1F26;
+}
+
+/* Buttons */
 .stButton>button {
     background: linear-gradient(to right, #00c6ff, #0072ff);
     color: white;
     border-radius: 10px;
+    font-weight: bold;
     padding: 10px;
 }
 
-.stTextInput>div>div>input {
+/* Input fields */
+.stTextInput input {
     background-color: #262730;
     color: white;
 }
 
-.css-1d391kg {
-    background-color: #262730;
+/* Cards look */
+.block-container {
+    padding: 2rem;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ---------------- HEADER ---------------- #
-st.title("🎓 Campus Connector")
-st.caption("Connecting students, clubs, and opportunities")
+st.title("🚀 Smart Career Navigator")
+st.caption("AI-Powered Career Guidance & Student Engagement Platform")
 st.divider()
 
 # ---------------- SIDEBAR ---------------- #
-menu = ["Home", "Events", "Clubs", "Profile", "Dashboard"]
+menu = ["Home", "Career Guidance", "Roadmap", "Dashboard", "Profile"]
 choice = st.sidebar.selectbox("Navigation", menu)
 
 # ---------------- HOME ---------------- #
 if choice == "Home":
-    st.subheader("🏠 Welcome to Campus Connector")
+    st.subheader("🏠 Welcome")
 
     st.write("""
-    Campus Connector helps students:
-    - Discover events 📅  
-    - Join clubs 🎯  
-    - Stay connected 🤝  
+    Smart Career Navigator helps you:
+    - 🎯 Choose the right career path  
+    - 📊 Analyze skill gaps  
+    - 🛣️ Get personalized roadmap  
+    - 📈 Track your progress  
     """)
 
-# ---------------- EVENTS ---------------- #
-elif choice == "Events":
-    st.subheader("📅 Upcoming Events")
+# ---------------- CAREER GUIDANCE ---------------- #
+elif choice == "Career Guidance":
+    st.subheader("🎯 Career Recommendation")
 
-    events = [
-        {"name": "Hackathon 2026", "date": "10 April"},
-        {"name": "AI Workshop", "date": "15 April"},
-        {"name": "Tech Seminar", "date": "20 April"}
-    ]
+    interest = st.text_input("Enter your interest")
+    skills = st.text_input("Enter your skills (comma separated)")
 
-    for i, event in enumerate(events):
-        st.markdown(f"### {event['name']}")
-        st.info(f"📅 Date: {event['date']}")
+    if st.button("Find Career"):
+        skills_lower = skills.lower()
 
-        if st.button("Join Event", key=f"event_{i}"):
-            st.success(f"You joined {event['name']}!")
+        if "code" in skills_lower:
+            career = "Software Developer"
+        elif "design" in interest.lower():
+            career = "UI/UX Designer"
+        elif "data" in skills_lower:
+            career = "Data Scientist"
+        else:
+            career = "Explore Multiple Fields"
 
-# ---------------- CLUBS ---------------- #
-elif choice == "Clubs":
-    st.subheader("🎯 College Clubs")
+        st.success(f"Recommended Career: {career}")
 
-    clubs = ["Coding Club", "AI Club", "Design Club", "Robotics Club"]
+        st.session_state["career"] = career
+        st.session_state["skills"] = skills_lower
 
-    for i, club in enumerate(clubs):
-        st.markdown(f"### {club}")
+# ---------------- ROADMAP ---------------- #
+elif choice == "Roadmap":
+    st.subheader("🛣️ Personalized Roadmap")
 
-        if st.button("Join Club", key=f"club_{i}"):
-            st.success(f"You joined {club}!")
+    career = st.session_state.get("career", None)
+    skills = st.session_state.get("skills", "")
+
+    if not career:
+        st.warning("Please go to Career Guidance first!")
+    else:
+        roadmap = {
+            "Software Developer": [
+                "Week 1-2: Learn Python Basics",
+                "Week 3-4: Data Structures",
+                "Week 5-6: Web Development",
+                "Week 7-8: Build Projects"
+            ],
+            "UI/UX Designer": [
+                "Week 1-2: Learn Design Principles",
+                "Week 3-4: Figma Basics",
+                "Week 5-6: UX Research",
+                "Week 7-8: Build Portfolio"
+            ],
+            "Data Scientist": [
+                "Week 1-2: Python + Pandas",
+                "Week 3-4: Statistics",
+                "Week 5-6: Machine Learning",
+                "Week 7-8: Projects"
+            ]
+        }
+
+        steps = roadmap.get(career, ["Explore multiple domains"])
+
+        for step in steps:
+            st.write("✔", step)
+
+# ---------------- DASHBOARD ---------------- #
+elif choice == "Dashboard":
+    st.subheader("📊 Career Progress Dashboard")
+
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Skills Learned", 5)
+    col2.metric("Projects Done", 2)
+    col3.metric("Progress", "60%")
+
+    categories = ["Skills", "Projects", "Progress"]
+    values = [5, 2, 60]
+
+    fig, ax = plt.subplots()
+    ax.bar(categories, values)
+    ax.set_title("Progress Overview")
+    st.pyplot(fig)
 
 # ---------------- PROFILE ---------------- #
 elif choice == "Profile":
-    st.subheader("👤 Student Profile")
+    st.subheader("👤 Profile")
 
-    name = st.text_input("Enter your name")
+    name = st.text_input("Name")
     branch = st.text_input("Branch")
-    interests = st.text_input("Interests")
+    goal = st.text_input("Career Goal")
 
     if st.button("Save Profile"):
         st.success("Profile saved successfully!")
 
-# ---------------- DASHBOARD ---------------- #
-elif choice == "Dashboard":
-    st.subheader("📊 Campus Insights Dashboard")
-
-    # Metrics
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Students", 120)
-    col2.metric("Events", 15)
-    col3.metric("Clubs", 6)
-
-    # Bar Chart
-    categories = ["Students", "Events", "Clubs"]
-    values = [120, 15, 6]
-
-    fig, ax = plt.subplots()
-    ax.bar(categories, values)
-    ax.set_title("Campus Overview")
-    st.pyplot(fig)
-
-    # Pie Chart
-    st.write("### 📌 Participation Overview")
-    fig2, ax2 = plt.subplots()
-    ax2.pie(values, labels=categories, autopct='%1.1f%%')
-    st.pyplot(fig2)
-
 # ---------------- FOOTER ---------------- #
 st.markdown("---")
 st.markdown("Made by Shruti Verma 🚀")
+
+ 
