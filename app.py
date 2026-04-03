@@ -2,10 +2,44 @@ import streamlit as st
 import matplotlib.pyplot as plt
 
 # ---------------- PAGE CONFIG ---------------- #
-st.set_page_config(page_title="Smart Career Navigator", page_icon="🎓")
+st.set_page_config(page_title="Campus Connector", page_icon="🎓")
+
+# ---------------- DARK CUSTOM CSS ---------------- #
+st.markdown("""
+<style>
+body {
+    background-color: #0E1117;
+    color: white;
+}
+
+.stApp {
+    background-color: #0E1117;
+}
+
+h1, h2, h3, h4 {
+    color: #FFFFFF;
+}
+
+.stButton>button {
+    background: linear-gradient(to right, #00c6ff, #0072ff);
+    color: white;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.stTextInput>div>div>input {
+    background-color: #262730;
+    color: white;
+}
+
+.css-1d391kg {
+    background-color: #262730;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # ---------------- HEADER ---------------- #
-st.title("🎓 Smart Career Navigator")
+st.title("🎓 Campus Connector")
 st.caption("Connecting students, clubs, and opportunities")
 st.divider()
 
@@ -18,14 +52,11 @@ if choice == "Home":
     st.subheader("🏠 Welcome to Campus Connector")
 
     st.write("""
-    Smart Career Navigator helps students:
-    - Discover events 📅
-    - Join clubs 🎯
-    - Stay connected 🤝
+    Campus Connector helps students:
+    - Discover events 📅  
+    - Join clubs 🎯  
+    - Stay connected 🤝  
     """)
-
-    if st.button("Explore Events"):
-        st.success("Go to Events section from sidebar!")
 
 # ---------------- EVENTS ---------------- #
 elif choice == "Events":
@@ -37,9 +68,11 @@ elif choice == "Events":
         {"name": "Tech Seminar", "date": "20 April"}
     ]
 
-    for event in events:
-        st.write(f"🔹 {event['name']} - {event['date']}")
-        if st.button(f"Join {event['name']}"):
+    for i, event in enumerate(events):
+        st.markdown(f"### {event['name']}")
+        st.info(f"📅 Date: {event['date']}")
+
+        if st.button("Join Event", key=f"event_{i}"):
             st.success(f"You joined {event['name']}!")
 
 # ---------------- CLUBS ---------------- #
@@ -48,9 +81,10 @@ elif choice == "Clubs":
 
     clubs = ["Coding Club", "AI Club", "Design Club", "Robotics Club"]
 
-    for club in clubs:
-        st.write(f"🔸 {club}")
-        if st.button(f"Join {club}"):
+    for i, club in enumerate(clubs):
+        st.markdown(f"### {club}")
+
+        if st.button("Join Club", key=f"club_{i}"):
             st.success(f"You joined {club}!")
 
 # ---------------- PROFILE ---------------- #
@@ -68,7 +102,13 @@ elif choice == "Profile":
 elif choice == "Dashboard":
     st.subheader("📊 Campus Insights Dashboard")
 
-    # Sample data
+    # Metrics
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Students", 120)
+    col2.metric("Events", 15)
+    col3.metric("Clubs", 6)
+
+    # Bar Chart
     categories = ["Students", "Events", "Clubs"]
     values = [120, 15, 6]
 
