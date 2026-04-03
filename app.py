@@ -8,49 +8,82 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------------- DARK THEME CSS ---------------- #
+# ---------------- DARK + BOLD CSS ---------------- #
 st.markdown("""
 <style>
-/* Main background */
+
+/* BACKGROUND */
 .stApp {
-    background-color: #0E1117;
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
 }
 
-/* Text */
-h1, h2, h3, h4, h5, h6, p, label {
-    color: #FFFFFF !important;
+/* HEADINGS */
+h1 {
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    font-size: 42px !important;
 }
 
-/* Sidebar */
+h2, h3 {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+/* TEXT */
+p, label, li {
+    color: #f1f1f1 !important;
+    font-size: 17px !important;
+    font-weight: 500;
+}
+
+/* SIDEBAR */
 section[data-testid="stSidebar"] {
-    background-color: #1C1F26;
+    background-color: #1a1d24;
 }
 
-/* Buttons */
+/* BUTTONS */
 .stButton>button {
-    background: linear-gradient(to right, #00c6ff, #0072ff);
+    background: linear-gradient(90deg, #00c6ff, #0072ff);
     color: white;
-    border-radius: 10px;
+    border-radius: 12px;
+    font-size: 16px;
     font-weight: bold;
     padding: 10px;
+    border: none;
 }
 
-/* Input fields */
+/* INPUTS */
 .stTextInput input {
-    background-color: #262730;
+    background-color: #2c2f36;
     color: white;
+    font-weight: 600;
+    border-radius: 8px;
 }
 
-/* Cards look */
+/* CARD STYLE */
 .block-container {
-    padding: 2rem;
+    background-color: rgba(255,255,255,0.06);
+    padding: 25px;
+    border-radius: 15px;
 }
+
+/* METRICS */
+[data-testid="stMetricValue"] {
+    color: #00c6ff !important;
+    font-weight: 700 !important;
+}
+
+/* FORCE TEXT VISIBILITY */
+.stMarkdown, .stText {
+    color: #ffffff !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
 # ---------------- HEADER ---------------- #
 st.title("🚀 Smart Career Navigator")
-st.caption("AI-Powered Career Guidance & Student Engagement Platform")
+st.markdown("### AI-Powered Career Guidance & Skill Planning Platform")
 st.divider()
 
 # ---------------- SIDEBAR ---------------- #
@@ -98,7 +131,6 @@ elif choice == "Roadmap":
     st.subheader("🛣️ Personalized Roadmap")
 
     career = st.session_state.get("career", None)
-    skills = st.session_state.get("skills", "")
 
     if not career:
         st.warning("Please go to Career Guidance first!")
@@ -160,5 +192,3 @@ elif choice == "Profile":
 # ---------------- FOOTER ---------------- #
 st.markdown("---")
 st.markdown("Made by Shruti Verma 🚀")
-
- 
